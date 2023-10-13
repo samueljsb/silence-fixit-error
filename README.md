@@ -17,6 +17,13 @@ the files:
 silence-fixit-error fixit.rules:CollapseIsinstanceChecks path/to/files/ path/to/more/files/
 ```
 
+Once an auto-fix is available for this rule, we can remove the `fixme` comments
+and run that auto-fix:
+
+```shell
+fix-silenced-fixit-error fixit.rules:CollapseIsinstanceChecks path/to/files/ path/to/more/files/
+```
+
 ## Rationale
 
 When adding a new rule (or enabling more rules) in `fixit` on a large code-base,
