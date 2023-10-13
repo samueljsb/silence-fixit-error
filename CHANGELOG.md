@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## Unreleased
 
+### Added
+
+- A command to auto-fix violations silenced with a `fixme` comment
+
+  This allows the existing violations to be fixed once there is an auto-fix
+  available.
+
 ## 0.1.0 -- 2023-10-10
 
 First release.
