@@ -1,8 +1,63 @@
 from __future__ import annotations
 
+import pytest
+
 from silence_fixit_error import _find_violations
+from silence_fixit_error import _parse_output_line
 from silence_fixit_error import main
 from silence_fixit_error import Violation
+
+
+@pytest.mark.parametrize(
+    'lines, expected_violations', (
+        pytest.param(
+            ['t.py@1:2 MyRuleName: the error message'],
+            [Violation('t.py', 'MyRuleName', 1)],
+            id='single-line',
+        ),
+        pytest.param(
+            [
+                't.py@1:2 MyRuleName: the error message',
+                'which continue over multiple lines',
+                'just like this one does.',
+            ],
+            [Violation('t.py', 'MyRuleName', 1), None, None],
+            id='multi-line',
+        ),
+        pytest.param(
+            [
+                't.py@1:2 MyRuleName: ',
+                'the error message on a new line',
+                'which continue over multiple lines',
+                'just like this one does.',
+            ],
+            [Violation('t.py', 'MyRuleName', 1), None, None, None],
+            id='multi-line-leading-ws',
+        ),
+        pytest.param(
+            [
+                't.py@1:2 MyRuleName: the error message',
+                'which continue over multiple lines',
+                'just like this one does.',
+                '',
+            ],
+            [Violation('t.py', 'MyRuleName', 1), None, None, None],
+            id='multi-line-trailing-ws',
+        ),
+        pytest.param(
+            ['t.py@1:2 MyRuleName: '],
+            [Violation('t.py', 'MyRuleName', 1)],
+            id='no-message',
+        ),
+    ),
+)
+def test_parse_output_line(lines, expected_violations):
+    violations = [
+        _parse_output_line(line)
+        for line in lines
+    ]
+
+    assert violations == expected_violations
 
 
 def test_find_violations(tmp_path, capsys):
@@ -17,7 +72,9 @@ isinstance(x, str) or isinstance(x, int)
     )
 
     assert violations == {
-        str(python_module): [Violation('CollapseIsinstanceChecks', 2)],
+        str(python_module): [
+            Violation(str(python_module), 'CollapseIsinstanceChecks', 2),
+        ],
     }
 
 

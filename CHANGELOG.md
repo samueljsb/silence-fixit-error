@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   This allows the existing violations to be fixed once there is an auto-fix
   available.
 
+### Fixed
+
+- Multi-line error messages are now handled correctly.
+
 ## 0.1.0 -- 2023-10-10
 
 First release.
