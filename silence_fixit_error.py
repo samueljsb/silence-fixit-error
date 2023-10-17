@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import re
 import subprocess
 import sys
 from collections import defaultdict
@@ -9,16 +10,22 @@ from collections.abc import Sequence
 from typing import NamedTuple
 
 
+ERROR_LINE_RE = re.compile(r'^.*?@\d+:\d+ ')
+
+
 class Violation(NamedTuple):
     filename: str
     rule_name: str
     lineno: int
 
 
-def _parse_output_line(line: str) -> Violation:
-    location, violated_rule_name, __ = line.split(maxsplit=2)
+def _parse_output_line(line: str) -> Violation | None:
+    if not ERROR_LINE_RE.match(line):
+        return None
+
+    location, violated_rule_name, *__ = line.split(maxsplit=2)
     filename, position = location.split('@', maxsplit=1)
-    lineno, __ = position.split(':', maxsplit=1)
+    lineno, *__ = position.split(':', maxsplit=1)
 
     rule_name_ = violated_rule_name.removesuffix(':')
     return Violation(filename, rule_name_, int(lineno))
@@ -41,7 +48,10 @@ def _find_violations(
     results: dict[str, list[Violation]] = defaultdict(list)
     for line in proc.stdout.splitlines():
         violation = _parse_output_line(line)
-        results[violation.filename].append(violation)
+        if violation:
+            results[violation.filename].append(violation)
+        else:  # pragma: no cover
+            pass
 
     return results
 
