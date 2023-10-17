@@ -17,7 +17,9 @@ isinstance(x, str) or isinstance(x, int)
     )
 
     assert violations == {
-        str(python_module): [Violation('CollapseIsinstanceChecks', 2)],
+        str(python_module): [
+            Violation(str(python_module), 'CollapseIsinstanceChecks', 2),
+        ],
     }
 
 

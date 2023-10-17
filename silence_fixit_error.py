@@ -10,8 +10,18 @@ from typing import NamedTuple
 
 
 class Violation(NamedTuple):
+    filename: str
     rule_name: str
     lineno: int
+
+
+def _parse_output_line(line: str) -> Violation:
+    location, violated_rule_name, __ = line.split(maxsplit=2)
+    filename, position = location.split('@', maxsplit=1)
+    lineno, __ = position.split(':', maxsplit=1)
+
+    rule_name_ = violated_rule_name.removesuffix(':')
+    return Violation(filename, rule_name_, int(lineno))
 
 
 def _find_violations(
@@ -30,13 +40,8 @@ def _find_violations(
     # extract filenames and line numbers
     results: dict[str, list[Violation]] = defaultdict(list)
     for line in proc.stdout.splitlines():
-        location, violated_rule_name, __ = line.split(maxsplit=2)
-        filename, position = location.split('@', maxsplit=1)
-        lineno, __ = position.split(':', maxsplit=1)
-
-        rule_name_ = violated_rule_name.removesuffix(':')
-
-        results[filename].append(Violation(rule_name_, int(lineno)))
+        violation = _parse_output_line(line)
+        results[violation.filename].append(violation)
 
     return results
 
