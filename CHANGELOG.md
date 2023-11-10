@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## Unreleased
 
+### Fixed
+
+- The `fix_silenced_fixit_error` module was not part of the built wheel, so the
+  `fix-silenced-fixit-error` did not work:
+
+  ```pytb
+  ModuleNotFoundError: No module named 'fix_silenced_fixit_error'
+  ```
+
+  That module has been added to the package so is now available when installed via `pip`.
+
 ## 0.3.0 -- 2023-10-17
 
 ### Fixed
