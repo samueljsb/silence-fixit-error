@@ -1,3 +1,7 @@
+This tool is no longer maintained. Its functionality is included in the [`silence-lint-error`](https://pypi.org/project/silence-lint-error/) package.
+
+---
+
 # silence-fixit-error
 
 Add `lint-fixme` comments to every occurrence of a `fixit` error.
